@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>time-blame social preview artwork</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { width: 1280px; height: 640px; padding: 56px 72px; display: flex; flex-direction: column; }
+    .wordmark { font-size: 36px; }
+    .wordmark img { width: 48px; height: 48px; }
+    h1 { font-size: 72px; margin: auto 0 36px; }
+    .bar { height: 56px; margin-bottom: auto; }
+    .bar span { font-size: 20px; padding-inline: 18px; }
+    .caption { display: flex; justify-content: space-between; color: var(--muted); font-size: 22px; }
+  </style>
+</head>
+<body>
+  <div class="wordmark"><img src="favicon.svg" width="48" height="48" alt="">time-blame</div>
+  <h1>Is Claude slow,<br><span>or is it your npm test?</span></h1>
+  <div class="bar" aria-hidden="true">
+    <span class="b-claude" style="flex: 31">Claude</span>
+    <span class="b-tools" style="flex: 19">tools</span>
+    <span class="b-you" style="flex: 49">you</span>
+    <span class="b-other" style="flex: 1"></span>
+  </div>
+  <div class="caption"><span>A Claude Code mod that splits every turn by who made you wait.</span><span>timeblame.aidojo.si</span></div>
+</body>
+</html>
