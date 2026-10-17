@@ -96,6 +96,7 @@ footer div { display: flex; flex-wrap: wrap; gap: 24px; }
 footer a { display: inline-block; padding-block: 6px; }
 
 pre.quote { white-space: pre; overflow-x: auto; overflow-wrap: normal; font-size: 14px; }
+pre.quote.line { white-space: pre-wrap; overflow-wrap: anywhere; }
 .split { margin-top: 28px; }
 .bar { display: flex; height: 44px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
 .bar span { display: flex; align-items: center; padding-inline: 12px; min-width: 0; overflow: hidden; white-space: nowrap; color: var(--on-bucket); font: 500 15px/1 var(--heading); }
