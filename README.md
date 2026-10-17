@@ -21,14 +21,14 @@ Both blocks are copied as text from a live session on Claude Code 2.1.302, where
 
 ## Install
 
-Function hooks are early access, so mods load only with a flag:
-
 ```sh
-git clone https://github.com/karanb192/time-blame
-CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1 claude --plugin-dir ./time-blame
+claude plugin marketplace add karanb192/time-blame
+claude plugin install time-blame@time-blame
 ```
 
-To keep it on, add `{ "env": { "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1" } }` to `~/.claude/settings.json`. That loads the hooks module of every installed plugin that has one. Needs Claude Code 2.1.302 or later.
+Then restart Claude Code or run `/reload-plugins`. Mods are on by default from Claude Code 2.1.287; time-blame needs 2.1.302 or later. To try it for one session without installing, clone the repo and run `claude --plugin-dir ./time-blame`.
+
+Landing page: https://timeblame.aidojo.si/
 
 ## What each bucket means
 
