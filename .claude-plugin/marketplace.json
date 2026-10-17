@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "time-blame",
+  "description": "time-blame: after each Claude Code turn, see whether the time went to Claude, your tools or you.",
+  "owner": {
+    "name": "Karan Bansal",
+    "url": "https://github.com/karanb192"
+  },
+  "plugins": [
+    {
+      "name": "time-blame",
+      "source": "./",
+      "description": "Splits each turn's time into Claude, tools, you and other, and prints a /blame receipt for the session. Reach L0: dim lines and one command, nothing leaves the machine.",
+      "category": "development",
+      "tags": ["mods", "performance", "latency", "observability"]
+    }
+  ]
+}

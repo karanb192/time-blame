@@ -1,7 +1,7 @@
 {
   "name": "time-blame",
   "version": "0.1.0",
-  "description": "Splits each Claude Code turn's time into Claude, tools, you and other, and prints a /blame receipt for the session. Nothing leaves the machine. Needs function hooks (early access), Claude Code 2.1.302+.",
+  "description": "Splits each Claude Code turn's time into Claude, tools, you and other, and prints a /blame receipt for the session. Nothing leaves the machine. Claude Code 2.1.302+.",
   "author": {
     "name": "Karan Bansal"
   },
