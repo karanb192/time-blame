@@ -44,7 +44,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 18px/1.6 var(--body); }
-::selection { background: var(--accent); color: #141413; }
+::selection { background: var(--tools); color: #141413; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 5px; }
 a { color: inherit; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 a:hover { text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
@@ -63,14 +63,13 @@ nav { display: flex; justify-content: space-between; align-items: center; gap: 2
 .github-link svg { flex-shrink: 0; }
 header { padding: 88px 0 64px; }
 h1, h2 { font-family: var(--heading); font-weight: 400; text-wrap: balance; }
-h1 { font-size: clamp(44px, 5vw, 68px); font-weight: 500; line-height: 1.18; letter-spacing: -.035em; margin: 0 0 30px; }
-h1 span { color: var(--title-accent); }
+h1 { max-width: 15ch; font-size: clamp(44px, 5.4vw, 76px); font-weight: 500; line-height: 1.08; letter-spacing: -.04em; margin: 0 0 48px; }
 h2 { font-size: clamp(30px, 3vw, 40px); line-height: 1.2; letter-spacing: -.025em; margin: 0 0 22px; }
 h2[id] { scroll-margin-top: 28px; }
 p { max-width: 70ch; margin: 0 0 20px; }
 .lead { max-width: 58ch; font-size: 22px; line-height: 1.5; color: var(--muted); }
 .actions { display: flex; gap: 28px; align-items: center; flex-wrap: wrap; margin: 30px 0 20px; }
-.button, button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px; border: 1px solid var(--accent); border-radius: 6px; background: var(--accent); color: #141413; text-decoration: none; font: 500 16px/1.5 var(--heading); cursor: pointer; }
+.button, button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 22px; border: 1px solid var(--ink); border-radius: 6px; background: var(--ink); color: var(--paper); text-decoration: none; font: 500 16px/1.5 var(--heading); cursor: pointer; }
 .button:hover, button:hover { background: var(--well); border-color: var(--ink); color: var(--ink); }
 button:disabled { opacity: .65; cursor: wait; }
 .text-link { display: inline-flex; align-items: center; gap: 12px; min-height: 48px; font-size: 16px; }
@@ -96,11 +95,18 @@ footer p { margin-bottom: 12px; }
 footer div { display: flex; flex-wrap: wrap; gap: 24px; }
 footer a { display: inline-block; padding-block: 6px; }
 
+.turn { margin: 0 0 44px; }
+.turn-bar, .turn-key { display: grid; grid-template-columns: 31fr 19fr 49fr 1fr; gap: 3px; }
+.turn-bar { height: clamp(72px, 9vw, 112px); }
+.seg { border-radius: 4px; transform-origin: left center; animation: grow .55s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i) * .5s + .2s); }
+@keyframes grow { from { transform: scaleX(0); } }
+.turn-key { margin-top: 12px; font: 400 17px/1.3 var(--heading); }
+.turn-key span { white-space: nowrap; overflow: visible; }
+.turn-key b { font-weight: 500; margin-right: 6px; }
+.turn figcaption { margin-top: 18px; font-size: 19px; color: var(--ink); max-width: 60ch; }
 pre.quote { white-space: pre; overflow-x: auto; overflow-wrap: normal; font-size: 14px; }
 pre.quote.line { white-space: pre-wrap; overflow-wrap: anywhere; }
 .split { margin-top: 28px; }
-.bar { display: flex; height: 44px; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); }
-.bar span { display: flex; align-items: center; padding-inline: 12px; min-width: 0; overflow: hidden; white-space: nowrap; color: var(--on-bucket); font: 500 15px/1 var(--heading); }
 .b-claude { background: var(--claude); }
 .b-tools { background: var(--tools); }
 .b-you { background: var(--you); }
@@ -113,7 +119,8 @@ pre.quote.line { white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 700px) {
   .page { padding-inline: 24px; }
   .buckets { grid-template-columns: 1fr; }
-  .bar span { padding-inline: 6px; font-size: 13px; }
+  .turn-key { grid-template-columns: 1fr 1fr 1fr; font-size: 15px; }
+  .turn-key span:last-child { display: none; }
   pre.quote { font-size: 12px; }
   nav { min-height: 88px; gap: 16px; }
   .wordmark { font-size: 26px; }
@@ -137,6 +144,7 @@ pre.quote.line { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .seg { animation: none; }
 }
 
 :root[data-theme="light"] { color-scheme: light; }
