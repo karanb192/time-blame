@@ -103,8 +103,8 @@ export const register: Register = on => {
       recent.delete(e.props.durationMs)
       remember(byMessage, e.requestId, r)
     }
-    const { Text } = $.ui.resolve(e)
-    return Text({
+    const { Box, Text } = $.ui.resolve(e)
+    const line = Text({
       children: [
         ...cells(bucketTimes(r), LINE_CELLS).map(b => Text({ color: COLORS[b], children: ['█'] })),
         ' ',
@@ -114,6 +114,7 @@ export const register: Register = on => {
         ),
       ],
     })
+    return Box({ marginTop: 1, children: [line] })
   })
 
   on('session.end', async ($, e, next) => {
