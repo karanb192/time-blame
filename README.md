@@ -4,6 +4,12 @@ A Claude Code mod that answers one question after every turn: was Claude slow, o
 
 It splits each turn's time by cause and shows it under the answer: in the terminal as a coloured line in place of Claude Code's "Worked for" line, elsewhere as a dim log line. `/blame` opens a panel with the whole session's split as a coloured bar. Claude never reads any of it, and nothing leaves your machine.
 
+![time-blame in a real Claude Code session: after the answer, the line shows Claude 15s and npm test 27s, then /blame opens the panel](site/assets/time-blame-demo.gif)
+
+A real run on Claude Code 2.1.302, in a small demo project whose test suite takes about 13 seconds. The waits are shown at 6× speed, as the clip says. Of the 47 seconds, Claude took 15 and `npm test` took 27. [Watch it as a video](https://timeblame.aidojo.si/#watch).
+
+The same two outputs in plain text, from an earlier live session. This is what you get outside the terminal, or where nothing can draw a panel:
+
 ```
 ⏺ time-blame: 26s · Claude 8.0s (7.2s before output) · sleep 4.7s · you 12s · other 0.3s
 ```
@@ -17,7 +23,7 @@ It splits each turn's time by cause and shows it under the answer: in the termin
 ⏺ time-blame: longest turn 26s. Times are summed waits measured in this session, not server speed.
 ```
 
-Both blocks are copied as text from a live session on Claude Code 2.1.302, where a permission dialog was left open for 12 seconds before it was approved. They show the plain-text form, which is what you get outside the terminal or where nothing can draw a panel; the terminal draws the same words with a coloured bar.
+Both blocks are copied as text from that session, where a permission dialog was left open for 12 seconds before it was approved.
 
 ## Install
 

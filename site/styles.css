@@ -111,6 +111,7 @@ footer a { display: inline-block; padding-block: 6px; }
 .turn figcaption { margin-top: 18px; font-size: 19px; color: var(--ink); max-width: 64ch; }
 .replay { min-height: 0; padding: 0; margin-left: 6px; border: 0; background: none; color: inherit; font: inherit; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .replay:hover { background: none; color: inherit; text-decoration-color: var(--tools); text-decoration-thickness: 2px; }
+video.demo { display: block; width: 100%; height: auto; margin: 24px 0 14px; border: 1px solid var(--line); border-radius: 8px; background: #24272e; }
 pre.quote { white-space: pre; overflow-x: auto; overflow-wrap: normal; font-size: 14px; }
 pre.quote.line { white-space: pre-wrap; overflow-wrap: anywhere; }
 .split { margin-top: 28px; }
