@@ -66,34 +66,35 @@ export type Bucket = 'claude' | 'tools' | 'you' | 'other'
 
 export const COLORS: Record<Bucket, string> = { claude: '#d97757', tools: '#6a9bcc', you: '#788c5d', other: '#b0aea5' }
 
-export type Segment = { text: string; bucket?: Bucket }
+export type Segment = { text: string; bucket?: Bucket; strong?: boolean }
 
 // The turn line as pieces, so a surface that draws colour can tint each
 // bucket's name while the plain line stays the same text.
 export function turnSegments(r: TurnReport): Segment[] {
-  const out: Segment[] = [{ text: fmt(r.wall) }]
+  const out: Segment[] = [{ text: fmt(r.wall), strong: true }]
   const sep = () => out.push({ text: ' · ' })
   const claude = r.waiting + r.writing
   if (claude > 0) {
     sep()
-    out.push({ text: 'Claude', bucket: 'claude' }, { text: ' ' + fmt(claude) + (r.waiting > 0 ? ' (' + fmt(r.waiting) + ' before output)' : '') })
+    out.push({ text: 'Claude', bucket: 'claude' }, { text: ' ' }, { text: fmt(claude), strong: true })
+    if (r.waiting > 0) out.push({ text: ' (' + fmt(r.waiting) + ' before output)' })
   }
   const tools = ranked(r.tools)
   const only = tools.length === 1 ? tools[0] : undefined
   if (only) {
     sep()
-    out.push({ text: only[0], bucket: 'tools' }, { text: ' ' + fmt(only[1]) })
+    out.push({ text: only[0], bucket: 'tools' }, { text: ' ' }, { text: fmt(only[1]), strong: true })
   } else if (tools.length > 1) {
     const top = tools.slice(0, 2).map(([k, v]) => k + ' ' + fmt(v)).join(', ')
     sep()
-    out.push({ text: 'tools', bucket: 'tools' }, { text: ' ' + fmt(toolTotal(r)) + ' (' + top + (tools.length > 2 ? ', +' + (tools.length - 2) : '') + ')' })
+    out.push({ text: 'tools', bucket: 'tools' }, { text: ' ' }, { text: fmt(toolTotal(r)), strong: true }, { text: ' (' + top + (tools.length > 2 ? ', +' + (tools.length - 2) : '') + ')' })
   }
   if (r.you > 0) {
     sep()
-    out.push({ text: 'you', bucket: 'you' }, { text: ' ' + fmt(r.you) })
+    out.push({ text: 'you', bucket: 'you' }, { text: ' ' }, { text: fmt(r.you), strong: true })
   }
   sep()
-  out.push({ text: 'other', bucket: 'other' }, { text: ' ' + fmt(r.other) })
+  out.push({ text: 'other', bucket: 'other' }, { text: ' ' }, { text: fmt(r.other), strong: true })
   if (r.aborted) out.push({ text: ' · interrupted' })
   return out
 }

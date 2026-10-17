@@ -1,5 +1,5 @@
 import type { Register } from 'claude-code'
-import { add, bucketTimes, cells, COLORS, emptyTotals, receipt, receiptModel, receiptRow, split, toolLabel, turnLine, turnSegments } from './ledger'
+import { add, bucketTimes, cells, COLORS, emptyTotals, fmt, receipt, receiptModel, split, toolLabel, turnLine, turnSegments } from './ledger'
 import type { Span, Totals, TurnReport } from './ledger'
 
 const MIN_LINE_MS = 3000
@@ -85,7 +85,7 @@ export const register: Register = on => {
         bar,
         Text({ children: [' '] }),
         ...m.rows.flatMap(r => [
-          Text({ children: [Text({ color: COLORS[r.bucket], children: ['██ '] }), receiptRow({ ...r, note: '' })] }),
+          Text({ children: [Text({ color: COLORS[r.bucket], children: ['██ '] }), r.name.padEnd(8), Text({ weight: 'bold', children: [fmt(r.ms).padStart(7)] }), (r.pct + '%').padStart(6)] }),
           ...(r.note ? [Text({ dimColor: true, children: ['   ' + r.note] })] : []),
         ]),
         Text({ children: [' '] }),
@@ -109,7 +109,9 @@ export const register: Register = on => {
         ...cells(bucketTimes(r), LINE_CELLS).map(b => Text({ color: COLORS[b], children: ['█'] })),
         ' ',
         Text({ dimColor: true, children: ['time-blame '] }),
-        ...turnSegments(r).map(seg => (seg.bucket ? Text({ color: COLORS[seg.bucket], children: [seg.text] }) : seg.text)),
+        ...turnSegments(r).map(seg =>
+          seg.bucket ? Text({ color: COLORS[seg.bucket], children: [seg.text] }) : seg.strong ? Text({ weight: 'bold', children: [seg.text] }) : seg.text,
+        ),
       ],
     })
   })

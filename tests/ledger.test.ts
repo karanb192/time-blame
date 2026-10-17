@@ -136,6 +136,7 @@ describe('colour', () => {
     const segs = turnSegments(r)
     expect(segs.map(s => s.text).join('')).toBe(turnLine(r))
     expect(segs.filter(s => s.bucket).map(s => s.text)).toEqual(['Claude', 'npm test', 'you', 'other'])
+    expect(segs.filter(s => s.strong).map(s => s.text)).toEqual(['25s', '8.0s', '4.7s', '12s', '0.3s'])
   })
 })
 
