@@ -36,18 +36,17 @@
     <main id="main">
       <header>
         <h1>Is Claude slow,<br> or is it your npm test?</h1>
-        <figure class="turn" aria-label="A real 26-second turn in order: Claude 5.3 seconds, a permission dialog waiting on you for 12 seconds, a tool running for 4.7 seconds, Claude again for 2.7 seconds, then 0.3 seconds of other: hooks and gaps between steps">
-          <div class="track">
-            <output class="clock" aria-hidden="true">26s</output>
-            <div class="turn-bar" aria-hidden="true"><div class="seg b-claude" data-start="0" data-end="5.3" style="left: 0.00%; width: 20.78%"></div><div class="seg b-you" data-start="5.3" data-end="17.75" style="left: 20.78%; width: 48.82%"></div><div class="seg b-tools" data-start="17.75" data-end="22.45" style="left: 69.61%; width: 18.43%"></div><div class="seg b-claude" data-start="22.45" data-end="25.15" style="left: 88.04%; width: 10.59%"></div><div class="seg b-other" title="other 0.3s: hooks and the gaps between steps" data-start="25.15" data-end="25.5" style="left: 98.63%; width: 1.37%"></div></div>
-            <div class="labels" aria-hidden="true"><span class="lab" data-start="0" style="left: 0.00%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>Claude</b> 5.3s</span><span class="lab" data-start="5.3" style="left: 20.78%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></g></svg>you</b> 12s</span><span class="lab" data-start="17.75" style="left: 69.61%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tools</b> 4.7s</span><span class="lab" data-start="22.45" style="left: 88.04%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>Claude</b> 2.7s</span></div>
+        <figure class="turn" aria-label="A real 3 minute 22 second turn from a pull request review: Claude 32 seconds in six short pieces, tools 2 minutes 50 seconds, almost all of it test runs">
+          <div class="track" data-total="201.9">
+            <output class="clock" aria-hidden="true">3m22s</output>
+            <div class="turn-bar" aria-hidden="true"><div class="seg b-claude" data-start="0" data-end="2.9" style="left: 0.00%; width: 1.44%"></div><div class="seg b-tools" data-start="2.9" data-end="35.6" style="left: 1.44%; width: 16.20%"></div><div class="seg b-claude" data-start="35.6" data-end="39.0" style="left: 17.63%; width: 1.68%"></div><div class="seg b-tools" data-start="39.0" data-end="95.7" style="left: 19.32%; width: 28.08%"></div><div class="seg b-claude" data-start="95.7" data-end="100.2" style="left: 47.40%; width: 2.23%"></div><div class="seg b-tools" data-start="100.2" data-end="140.3" style="left: 49.63%; width: 19.86%"></div><div class="seg b-claude" data-start="140.3" data-end="146.5" style="left: 69.49%; width: 3.07%"></div><div class="seg b-tools" data-start="146.5" data-end="180.9" style="left: 72.56%; width: 17.04%"></div><div class="seg b-claude" data-start="180.9" data-end="188.6" style="left: 89.60%; width: 3.81%"></div><div class="seg b-tools" data-start="188.6" data-end="194.7" style="left: 93.41%; width: 3.02%"></div><div class="seg b-claude" data-start="194.7" data-end="201.9" style="left: 96.43%; width: 3.57%"></div></div>
+            <div class="labels" aria-hidden="true"><span class="lab" data-start="2.9" style="left: 1.44%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>npm test</b> 33s</span><span class="lab" data-start="39.0" style="left: 19.32%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>npm test</b> 57s</span><span class="lab" data-start="100.2" style="left: 49.63%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tests</b> 40s</span><span class="lab" data-start="146.5" style="left: 72.56%"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tests</b> 34s</span></div>
           </div>
           <div class="turn-key" aria-hidden="true">
-            <span><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>Claude</b> 8.0s</span>
-            <span><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tools</b> 4.7s</span>
-            <span><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></g></svg>you</b> 12s</span>
+            <span><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>Claude</b> 32s</span>
+            <span><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tools</b> 2m50s</span>
           </div>
-          <figcaption>A real 26-second turn, in the order it happened. The longest stretch was a permission dialog waiting on you. The grey sliver is 0.3s no one can claim: hooks and the gaps between steps. <button type="button" class="replay" hidden>Replay at 4× speed</button></figcaption>
+          <figcaption>A real turn from a pull request review, rebuilt from the session's own timestamps. Claude needed 32 seconds. Four commands full of test runs took most of the other three minutes. <button type="button" class="replay" hidden>Replay</button></figcaption>
         </figure>
         <p class="lead">time-blame is a mod for Claude Code. After every turn, one quiet line says where the time went.</p>
         <div class="actions"><a class="button" href="#install">Install time-blame</a><a class="text-link" href="#line">See the line it prints</a></div>
@@ -58,7 +57,7 @@
         <h2 id="line">One line after every turn.</h2>
         <p>It appears under any turn of 3 seconds or more, dim, so it never competes with the answer.</p>
         <pre class="quote line"><code>⏺ time-blame: 26s · Claude 8.0s (7.2s before output) · sleep 4.7s · you 12s · other 0.3s</code></pre>
-        <p class="fine-print">Copied as text from a live session on Claude Code 2.1.302, 17 October 2026. The bar at the top of this page charts the same turn. The tool in this test run was <code>sleep 4</code>; in yours it names whatever ran, such as <code>npm test</code> or <code>pytest</code>.</p>
+        <p class="fine-print">Copied as text from a live session on Claude Code 2.1.302, 17 October 2026. The tool in this test run was <code>sleep 4</code>; in yours it names whatever ran, such as <code>npm test</code> or <code>pytest</code>.</p>
       </section>
 
       <section aria-labelledby="receipt">
@@ -115,9 +114,15 @@ claude plugin install time-blame@time-blame</code></pre>
       const clock = track.querySelector('.clock');
       const bar = track.querySelector('.turn-bar');
       const button = document.querySelector('.replay');
-      const total = 25.5, speed = 4;
-      const fmt = s => (s < 10 ? (Math.round(s * 10) / 10).toFixed(1) : String(Math.round(s))) + 's';
+      const total = +track.dataset.total, speed = total / 6.5;
+      let now = total;
+      const fmt = s => {
+        if (s < 10) return (Math.round(s * 10) / 10).toFixed(1) + 's';
+        const r = Math.round(s);
+        return r < 60 ? r + 's' : Math.floor(r / 60) + 'm' + String(r % 60).padStart(2, '0') + 's';
+      };
       const draw = t => {
+        now = t;
         for (const seg of segs) {
           const a = +seg.dataset.start, b = +seg.dataset.end;
           seg.style.width = (Math.min(Math.max(t - a, 0), b - a) / total * 100) + '%';
@@ -141,7 +146,7 @@ claude plugin install time-blame@time-blame</code></pre>
       button.hidden = false;
       button.addEventListener('click', play);
       if (still.matches) draw(total); else { draw(0); setTimeout(play, 350); }
-      addEventListener('resize', () => draw(parseFloat(clock.textContent) >= 25 ? total : parseFloat(clock.textContent)));
+      addEventListener('resize', () => draw(now));
     })();
     document.addEventListener('click', async (event) => {
       const button = event.target.closest('[data-copy]');
