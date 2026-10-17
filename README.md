@@ -2,7 +2,7 @@
 
 A Claude Code mod that answers one question after every turn: was Claude slow, or was it your `npm test`?
 
-It splits each turn's time by cause and prints one dim line under the answer. `/blame` prints a receipt for the whole session. Claude never reads either, and nothing leaves your machine.
+It splits each turn's time by cause and shows it under the answer: in the terminal as a coloured line in place of Claude Code's "Worked for" line, elsewhere as a dim log line. `/blame` opens a panel with the whole session's split as a coloured bar. Claude never reads any of it, and nothing leaves your machine.
 
 ```
 ⏺ time-blame: 26s · Claude 8.0s (7.2s before output) · sleep 4.7s · you 12s · other 0.3s
@@ -17,7 +17,7 @@ It splits each turn's time by cause and prints one dim line under the answer. `/
 ⏺ time-blame: longest turn 26s. Times are summed waits measured in this session, not server speed.
 ```
 
-Both blocks are copied as text from a live session on Claude Code 2.1.302, where a permission dialog was left open for 12 seconds before it was approved.
+Both blocks are copied as text from a live session on Claude Code 2.1.302, where a permission dialog was left open for 12 seconds before it was approved. They show the plain-text form, which is what you get outside the terminal or where nothing can draw a panel; the terminal draws the same words with a coloured bar.
 
 ## Install
 
@@ -46,7 +46,7 @@ Two or more tools running at once count as `parallel tools`, rather than blaming
 
 A subagent's time sits inside the Agent call that started it, labelled `subagent`. Its own steps are not counted again.
 
-The line is printed for turns of 3 seconds or more. `/blame` counts every turn.
+The line appears for turns of 3 seconds or more. `/blame` counts every turn.
 
 ## Things to know
 
@@ -54,23 +54,25 @@ The line is printed for turns of 3 seconds or more. `/blame` counts every turn.
 - **Bash commands are named only from a fixed list.** Common programs (`npm`, `pytest`, `cargo`, `git`, `make` and others) and their common subcommands (`npm test`, `cargo build`) are shown. A script name, a path or anything else shows as `Bash`, because a command line can carry private names. In a chained command such as `git stash && npm test`, the test or build step names the call, since that is where the time usually goes.
 - **On a managed Claude Code install, approvals count as tool time.** Approvals are timed with the `PermissionRequest` and `PostToolUse` settings-hook events. Where an organization manages Claude Code, those events skip plugins a person installs. The dialog wait then falls into the tool's time.
 - **Retries are not a separate bucket.** Claude Code logs a retried request only after it gives up, so a retry that succeeds leaves no record a mod can read. Retry time shows up as "before output".
+- **Colour needs the terminal for the turn line.** Only the terminal lets a mod redraw the line that closes a turn. In the Desktop app and VS Code the turn line is a dim log line, and an interrupted turn always is. The `/blame` panel draws in all three.
+- **Totals live in memory.** They reset on `/clear`, `/resume` and when the plugin reloads.
 - **It measures this session on this machine.** It says nothing about Anthropic's servers, and it keeps nothing after the session ends.
 
 ## What it can reach
 
 Validated on Claude Code 2.1.302:
 
-    ❯ ./register.ts hooks: session.start, command.run{command=blame}, session.end, turn.start, turn.step, classic.PermissionRequest, classic.PostToolUse, classic.PostToolUseFailure, tool.call, turn.complete
-    ❯ ./register.ts calls: $.command.register, $.ui.log
+    ❯ ./register.ts hooks: session.start, command.run{command=blame}, ui.render{component=Pane}, ui.render{component=TurnDuration}, session.end, turn.start, turn.step, classic.PermissionRequest, classic.PostToolUse, classic.PostToolUseFailure, tool.call, turn.complete
+    ❯ ./register.ts calls: $.command.register, $.session.surfaces, $.ui.invalidate, $.ui.log, $.ui.open, $.ui.resolve
 
-Reach L0, draws and remembers. It sees every tool call and every model request, as timing only.
+Reach L0, draws and remembers. It sees every tool call and every model request, as timing only. It draws in two places: the line that closes a turn in the terminal, and its own `/blame` panel.
 
     Threat model for time-blame (reach L0, draws and remembers)
-    1. Reads:    timestamps of turns, model requests and tool calls; the kind of each streamed chunk (never its text); the tool name; for Bash, the command line, matched against a fixed list of program names and dropped; the execution time Claude Code reports with each result
+    1. Reads:    which apps are drawing the session (terminal, Desktop, VS Code); timestamps of turns, model requests and tool calls; the kind of each streamed chunk (never its text); the tool name; for Bash, the command line, matched against a fixed list of program names and dropped; the execution time Claude Code reports with each result
     2. Runs:     nothing
     3. Sends:    nothing leaves the machine
     4. Persists: nothing; the session's totals live in memory and reset on /clear and /resume
-    5. Hostile input: a crafted command line can only change which allowlisted label is shown or turn it into "Bash"; no input reaches a process, a file, a prompt or the network, and the lines go to the transcript as dim log lines Claude does not read
+    5. Hostile input: a crafted command line can only change which allowlisted label is shown or turn it into "Bash"; no input reaches a process, a file, a prompt or the network, and what it shows goes to the screen only, as drawn lines, a panel or dim log lines, none of which Claude reads
 
 If a hook throws, Claude Code skips it and the tool call or request runs as it would without the mod.
 

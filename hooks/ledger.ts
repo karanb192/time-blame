@@ -62,20 +62,65 @@ function ranked(m: Record<string, number>): Array<[string, number]> {
   return Object.entries(m).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])
 }
 
-export function turnLine(r: TurnReport): string {
-  const parts = [fmt(r.wall)]
+export type Bucket = 'claude' | 'tools' | 'you' | 'other'
+
+export const COLORS: Record<Bucket, string> = { claude: '#d97757', tools: '#6a9bcc', you: '#788c5d', other: '#b0aea5' }
+
+export type Segment = { text: string; bucket?: Bucket }
+
+// The turn line as pieces, so a surface that draws colour can tint each
+// bucket's name while the plain line stays the same text.
+export function turnSegments(r: TurnReport): Segment[] {
+  const out: Segment[] = [{ text: fmt(r.wall) }]
+  const sep = () => out.push({ text: ' · ' })
   const claude = r.waiting + r.writing
-  if (claude > 0) parts.push('Claude ' + fmt(claude) + (r.waiting > 0 ? ' (' + fmt(r.waiting) + ' before output)' : ''))
+  if (claude > 0) {
+    sep()
+    out.push({ text: 'Claude', bucket: 'claude' }, { text: ' ' + fmt(claude) + (r.waiting > 0 ? ' (' + fmt(r.waiting) + ' before output)' : '') })
+  }
   const tools = ranked(r.tools)
   const only = tools.length === 1 ? tools[0] : undefined
-  if (only) parts.push(only[0] + ' ' + fmt(only[1]))
-  else if (tools.length > 1) {
+  if (only) {
+    sep()
+    out.push({ text: only[0], bucket: 'tools' }, { text: ' ' + fmt(only[1]) })
+  } else if (tools.length > 1) {
     const top = tools.slice(0, 2).map(([k, v]) => k + ' ' + fmt(v)).join(', ')
-    parts.push('tools ' + fmt(toolTotal(r)) + ' (' + top + (tools.length > 2 ? ', +' + (tools.length - 2) : '') + ')')
+    sep()
+    out.push({ text: 'tools', bucket: 'tools' }, { text: ' ' + fmt(toolTotal(r)) + ' (' + top + (tools.length > 2 ? ', +' + (tools.length - 2) : '') + ')' })
   }
-  if (r.you > 0) parts.push('you ' + fmt(r.you))
-  parts.push('other ' + fmt(r.other))
-  return parts.join(' · ') + (r.aborted ? ' · interrupted' : '')
+  if (r.you > 0) {
+    sep()
+    out.push({ text: 'you', bucket: 'you' }, { text: ' ' + fmt(r.you) })
+  }
+  sep()
+  out.push({ text: 'other', bucket: 'other' }, { text: ' ' + fmt(r.other) })
+  if (r.aborted) out.push({ text: ' · interrupted' })
+  return out
+}
+
+export function turnLine(r: TurnReport): string {
+  return turnSegments(r).map(s => s.text).join('')
+}
+
+export function bucketTimes(r: TurnReport): Record<Bucket, number> {
+  return { claude: r.waiting + r.writing, tools: toolTotal(r), you: r.you, other: r.other }
+}
+
+// Splits `width` cells between the buckets in proportion to their time.
+// A bucket with any time gets at least one cell, so a short wait stays visible.
+export function cells(times: Record<Bucket, number>, width: number): Bucket[] {
+  const order: Bucket[] = ['claude', 'tools', 'you', 'other']
+  const total = order.reduce((a, k) => a + times[k], 0)
+  if (total <= 0 || width <= 0) return []
+  const live = order.filter(k => times[k] > 0)
+  const counts = new Map<Bucket, number>(live.map(k => [k, 1]))
+  let left = width - live.length
+  if (left < 0) return live.slice(0, width)
+  const exact = live.map(k => ({ k, share: (times[k] / total) * left }))
+  for (const { k, share } of exact) counts.set(k, (counts.get(k) as number) + Math.floor(share))
+  left -= exact.reduce((a, { share }) => a + Math.floor(share), 0)
+  for (const { k } of [...exact].sort((x, y) => (y.share % 1) - (x.share % 1)).slice(0, left)) counts.set(k, (counts.get(k) as number) + 1)
+  return live.flatMap(k => Array<Bucket>(counts.get(k) as number).fill(k))
 }
 
 export type Totals = TurnReport & { turns: number; interrupted: number; longest: number }
@@ -105,23 +150,38 @@ export function add(t: Totals, r: TurnReport): Totals {
   }
 }
 
-export function receipt(t: Totals): string[] {
-  if (t.turns === 0) return ['No finished turns yet in this session.']
-  const pct = (ms: number) => (t.wall > 0 ? Math.round((ms / t.wall) * 100) : 0) + '%'
-  const row = (name: string, ms: number, note: string) =>
-    name.padEnd(8) + fmt(ms).padStart(7) + pct(ms).padStart(6) + (note ? '  ' + note : '')
+export type ReceiptRow = { bucket: Bucket; name: string; ms: number; pct: number; note: string }
+
+export type ReceiptModel = { header: string; rows: ReceiptRow[]; times: Record<Bucket, number>; footer: string }
+
+export function receiptModel(t: Totals): ReceiptModel | null {
+  if (t.turns === 0) return null
+  const pct = (ms: number) => (t.wall > 0 ? Math.round((ms / t.wall) * 100) : 0)
   const tools = ranked(t.tools)
   const toolNote = tools.slice(0, 3).map(([k, v]) => k + ' ' + fmt(v)).join(', ') + (tools.length > 3 ? ', +' + (tools.length - 3) + ' more' : '')
   const youNote = ranked(t.youBy).map(([k, v]) => k + ' ' + fmt(v)).join(', ')
-  const lines = [
-    'this session, this machine · ' + t.turns + ' turn' + (t.turns === 1 ? '' : 's') + ' · ' + fmt(t.wall) + ' of turn time' + (t.interrupted ? ' · ' + t.interrupted + ' interrupted' : ''),
-    row('Claude', t.waiting + t.writing, 'before output ' + fmt(t.waiting) + ', writing ' + fmt(t.writing)),
-    row('tools', toolTotal(t), toolNote),
-    row('you', t.you, youNote),
-    row('other', t.other, 'not attributed: hooks, local work, gaps'),
-    'longest turn ' + fmt(t.longest) + '. Times are summed waits measured in this session, not server speed.',
-  ]
-  return lines
+  const times = bucketTimes(t)
+  return {
+    header: 'this session, this machine · ' + t.turns + ' turn' + (t.turns === 1 ? '' : 's') + ' · ' + fmt(t.wall) + ' of turn time' + (t.interrupted ? ' · ' + t.interrupted + ' interrupted' : ''),
+    rows: [
+      { bucket: 'claude', name: 'Claude', ms: times.claude, pct: pct(times.claude), note: 'before output ' + fmt(t.waiting) + ', writing ' + fmt(t.writing) },
+      { bucket: 'tools', name: 'tools', ms: times.tools, pct: pct(times.tools), note: toolNote },
+      { bucket: 'you', name: 'you', ms: times.you, pct: pct(times.you), note: youNote },
+      { bucket: 'other', name: 'other', ms: times.other, pct: pct(times.other), note: 'not attributed: hooks, local work, gaps' },
+    ],
+    times,
+    footer: 'longest turn ' + fmt(t.longest) + '. Times are summed waits measured in this session, not server speed.',
+  }
+}
+
+export function receiptRow(r: ReceiptRow): string {
+  return r.name.padEnd(8) + fmt(r.ms).padStart(7) + (r.pct + '%').padStart(6) + (r.note ? '  ' + r.note : '')
+}
+
+export function receipt(t: Totals): string[] {
+  const m = receiptModel(t)
+  if (!m) return ['No finished turns yet in this session.']
+  return [m.header, ...m.rows.map(receiptRow), m.footer]
 }
 
 const PACKAGE_MANAGERS = new Set(['npm', 'pnpm', 'yarn', 'bun'])

@@ -55,14 +55,14 @@
 
       <section aria-labelledby="line">
         <h2 id="line">One line after every turn.</h2>
-        <p>It appears under any turn of 3 seconds or more, dim, so it never competes with the answer.</p>
+        <p>In the terminal it takes the place of Claude Code's "Worked for" line, with a small coloured bar in front, so it adds nothing to the transcript. Other apps show it as a dim line.</p>
         <pre class="quote line"><code>⏺ time-blame: 26s · Claude 8.0s (7.2s before output) · sleep 4.7s · you 12s · other 0.3s</code></pre>
         <p class="fine-print">Copied as text from a live session on Claude Code 2.1.302, 17 October 2026. The tool in this test run was <code>sleep 4</code>; in yours it names whatever ran, such as <code>npm test</code> or <code>pytest</code>.</p>
       </section>
 
       <section aria-labelledby="receipt">
         <h2 id="receipt">A receipt for the whole session.</h2>
-        <p>Type <code>/blame</code> any time. It adds up every turn so far, names the commands that cost you most, and keeps the time you spent deciding separate.</p>
+        <p>Type <code>/blame</code> any time. A panel opens with the session's split as a coloured bar, the commands that cost you most, and the time you spent deciding kept separate. Its plain-text form:</p>
         <pre class="quote"><code>⏺ time-blame: this session, this machine · 1 turn · 26s of turn time
 ⏺ time-blame: Claude     8.0s   31%  before output 7.2s, writing 0.8s
 ⏺ time-blame: tools      4.7s   19%  sleep 4.7s

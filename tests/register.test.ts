@@ -14,6 +14,7 @@ function world(on: On) {
   const lines: string[] = []
   on('ui.log', ($, e) => { lines.push(e.text); return { value: undefined } })
   on('command.register', ($, e) => ({ value: { command: e.name } }))
+  on('session.surfaces', () => ({ value: [] }))
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('turn.start', ($, e) => ({ turnId: e.turnId }))
   on('turn.complete', () => ({ text: '' }))

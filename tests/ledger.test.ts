@@ -1,5 +1,5 @@
 import { describe, expect, test, tier } from 'claude-code/testing'
-import { add, bashLabel, emptyTotals, fmt, PARALLEL, receipt, split, toolLabel, turnLine } from '../hooks/ledger'
+import { add, bashLabel, cells, emptyTotals, fmt, PARALLEL, receipt, split, toolLabel, turnLine, turnSegments } from '../hooks/ledger'
 import type { Span } from '../hooks/ledger'
 
 tier('user')
@@ -109,3 +109,27 @@ describe('output', () => {
     expect(receipt(emptyTotals())).toEqual(['No finished turns yet in this session.'])
   })
 })
+
+describe('colour', () => {
+  test('cells follow the split and keep a short wait visible', async () => {
+    const c = cells({ claude: 8000, tools: 4700, you: 12000, other: 300 }, 10)
+    expect(c.length).toBe(10)
+    const count = (k: string) => c.filter(b => b === k).length
+    expect(count('you')).toBeGreaterThan(count('claude'))
+    expect(count('claude')).toBeGreaterThan(count('tools'))
+    expect(c.filter(b => b === 'other').length).toBe(1)
+    expect(c[0]).toBe('claude')
+  })
+
+  test('cells with nothing measured are empty', async () => {
+    expect(cells({ claude: 0, tools: 0, you: 0, other: 0 }, 10)).toEqual([])
+  })
+
+  test('segments spell the same line and tint only bucket names', async () => {
+    const r = split([span('writing', 0, 8000), span('tool', 8000, 12700, 'npm test'), span('you', 12700, 25100, 'approvals')], 0, 25400)
+    const segs = turnSegments(r)
+    expect(segs.map(s => s.text).join('')).toBe(turnLine(r))
+    expect(segs.filter(s => s.bucket).map(s => s.text)).toEqual(['Claude', 'npm test', 'you', 'other'])
+  })
+})
+

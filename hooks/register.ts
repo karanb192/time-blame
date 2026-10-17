@@ -1,8 +1,10 @@
 import type { Register } from 'claude-code'
-import { add, emptyTotals, receipt, split, toolLabel, turnLine } from './ledger'
-import type { Span, Totals } from './ledger'
+import { add, bucketTimes, cells, COLORS, emptyTotals, receipt, receiptModel, receiptRow, split, toolLabel, turnLine, turnSegments } from './ledger'
+import type { Span, Totals, TurnReport } from './ledger'
 
 const MIN_LINE_MS = 3000
+const PANE = 'time-blame'
+const LINE_CELLS = 10
 
 // Tools whose whole call is a person deciding, so their time is yours.
 const USER_TOOLS: Record<string, string> = { AskUserQuestion: 'questions', ExitPlanMode: 'plan approval' }
@@ -18,6 +20,10 @@ type Turn = {
 
 let turn: Turn | null = null
 let totals: Totals = emptyTotals()
+let paneOpened = false
+// Reports by the turn's durationMs: the TurnDuration site carries the same
+// number, which is how its redraw finds the turn it closes.
+const recent = new Map<number, TurnReport>()
 const execs = new Map<string, { start: number; end: number }>()
 const asks: Array<{ at: number; tool: string; claimed: boolean }> = []
 
@@ -43,8 +49,52 @@ export const register: Register = on => {
   })
 
   on('command.run', { command: 'blame' }, async $ => {
-    for (const line of receipt(totals)) $.ui.log(line)
+    const surfaces = await $.session.surfaces()
+    if (surfaces.length === 0) {
+      for (const line of receipt(totals)) $.ui.log(line)
+      return {}
+    }
+    await $.ui.open({ id: PANE, title: 'time-blame', focus: true, closeOnEscape: true })
+    paneOpened = true
     return {}
+  })
+
+  on('ui.render', { component: 'Pane' }, async ($, e, next) => {
+    if (e.requestId !== PANE) return next(e)
+    const { Box, Text } = $.ui.resolve(e)
+    const m = receiptModel(totals)
+    if (!m) return Box({ flexDirection: 'column', children: [Text({ children: ['No finished turns yet in this session.'] }), Text({ dimColor: true, children: ['Esc closes this pane.'] })] })
+    const width = Math.max(10, Math.min(60, (e.props.bodyColumns || 40) - 2))
+    const bar = Text({ children: cells(m.times, width).map(b => Text({ color: COLORS[b], children: ['█'] })) })
+    return Box({
+      flexDirection: 'column',
+      children: [
+        Text({ children: [m.header] }),
+        Text({ children: [' '] }),
+        bar,
+        Text({ children: [' '] }),
+        ...m.rows.flatMap(r => [
+          Text({ children: [Text({ color: COLORS[r.bucket], children: ['██ '] }), receiptRow({ ...r, note: '' })] }),
+          ...(r.note ? [Text({ dimColor: true, children: ['   ' + r.note] })] : []),
+        ]),
+        Text({ children: [' '] }),
+        Text({ dimColor: true, children: ['Summed waits in this session, not server speed. Esc closes.'] }),
+      ],
+    })
+  })
+
+  on('ui.render', { component: 'TurnDuration' }, async ($, e, next) => {
+    const r = recent.get(e.props.durationMs)
+    if (!r) return next(e)
+    const { Text } = $.ui.resolve(e)
+    return Text({
+      children: [
+        ...cells(bucketTimes(r), LINE_CELLS).map(b => Text({ color: COLORS[b], children: ['█'] })),
+        ' ',
+        Text({ dimColor: true, children: ['time-blame '] }),
+        ...turnSegments(r).map(seg => (seg.bucket ? Text({ color: COLORS[seg.bucket], children: [seg.text] }) : seg.text)),
+      ],
+    })
   })
 
   on('session.end', async ($, e, next) => {
@@ -138,7 +188,17 @@ export const register: Register = on => {
       const report = finish(turn, Date.now(), e.durationMs, e.isAborted)
       turn = null
       totals = add(totals, report)
-      if (report.wall >= MIN_LINE_MS) $.ui.log(turnLine(report))
+      if (paneOpened) $.ui.invalidate('ui.render')
+      if (report.wall >= MIN_LINE_MS) {
+        // A terminal-only session draws the line in place of "Worked for";
+        // anywhere else, and for an interrupted turn, it is a log line.
+        const surfaces = await $.session.surfaces()
+        const terminalOnly = surfaces.length > 0 && surfaces.every(s => s === 'terminal')
+        if (terminalOnly && !report.aborted) {
+          recent.set(e.durationMs, report)
+          if (recent.size > 50) recent.delete(recent.keys().next().value as number)
+        } else $.ui.log(turnLine(report))
+      }
     }
     return r
   })
