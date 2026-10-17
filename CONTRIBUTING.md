@@ -1,6 +1,12 @@
 # Contributing
 
-Issues and pull requests are welcome.
+Issues are welcome, and so are pull requests that follow this rule:
+
+1. **Small fixes: send a pull request directly.** A program or subcommand for the label list, a typo, a missing test.
+2. **Anything else: open an issue first** and wait for a yes before writing code. That covers a new bucket, a change to how time is split, and any new call on the mods API.
+3. A pull request that goes beyond a small fix without an agreed issue is closed with a link to this file.
+
+An issue about a wrong split is most useful with the Claude Code version, the time-blame line as printed, and what actually happened in that turn.
 
 ## Run the checks
 
