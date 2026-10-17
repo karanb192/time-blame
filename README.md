@@ -51,7 +51,7 @@ The line is printed for turns of 3 seconds or more. `/blame` counts every turn.
 ## Things to know
 
 - **The total is longer than Claude Code's "Worked for".** Claude Code's counter leaves out the time a dialog waits for you. In the run above it said 13s, and time-blame said 26s: the 12 seconds of the open dialog, plus rounding.
-- **Bash commands are named only from a fixed list.** Common programs (`npm`, `pytest`, `cargo`, `git`, `make` and others) and their common subcommands (`npm test`, `cargo build`) are shown. A script name, a path or anything else shows as `Bash`, because a command line can carry private names.
+- **Bash commands are named only from a fixed list.** Common programs (`npm`, `pytest`, `cargo`, `git`, `make` and others) and their common subcommands (`npm test`, `cargo build`) are shown. A script name, a path or anything else shows as `Bash`, because a command line can carry private names. In a chained command such as `git stash && npm test`, the test or build step names the call, since that is where the time usually goes.
 - **On a managed Claude Code install, approvals count as tool time.** Approvals are timed with the `PermissionRequest` and `PostToolUse` settings-hook events. Where an organization manages Claude Code, those events skip plugins a person installs. The dialog wait then falls into the tool's time.
 - **Retries are not a separate bucket.** Claude Code logs a retried request only after it gives up, so a retry that succeeds leaves no record a mod can read. Retry time shows up as "before output".
 - **It measures this session on this machine.** It says nothing about Anthropic's servers, and it keeps nothing after the session ends.
