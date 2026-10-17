@@ -85,4 +85,4 @@ claude plugin test .
 
 ## License
 
-MIT
+MIT. The landing page uses icons from [Lucide](https://lucide.dev) (ISC) and the GitHub mark from [Simple Icons](https://simpleicons.org) (CC0).

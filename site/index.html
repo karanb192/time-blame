@@ -31,7 +31,7 @@
   <div class="page">
     <nav aria-label="Main navigation">
       <a class="wordmark" href="./" aria-label="time-blame home"><img src="favicon.svg" width="36" height="36" alt="">time-blame</a>
-      <div class="nav-links"><a href="#install">Install</a><a href="#buckets">How it splits</a><a class="github-link" href="https://github.com/karanb192/time-blame"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91Z"/></svg>Star on GitHub</a></div>
+      <div class="nav-links"><a href="#install">Install</a><a href="#buckets">How it splits</a><a class="github-link" href="https://github.com/karanb192/time-blame"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12c0 5.303 3.438 9.8 8.205 11.385c.6.113.82-.258.82-.577c0-.285-.01-1.04-.015-2.04c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729c1.205.084 1.838 1.236 1.838 1.236c1.07 1.835 2.809 1.305 3.495.998c.108-.776.417-1.305.76-1.605c-2.665-.3-5.466-1.332-5.466-5.93c0-1.31.465-2.38 1.235-3.22c-.135-.303-.54-1.523.105-3.176c0 0 1.005-.322 3.3 1.23c.96-.267 1.98-.399 3-.405c1.02.006 2.04.138 3 .405c2.28-1.552 3.285-1.23 3.285-1.23c.645 1.653.24 2.873.12 3.176c.765.84 1.23 1.91 1.23 3.22c0 4.61-2.805 5.625-5.475 5.92c.42.36.81 1.096.81 2.22c0 1.606-.015 2.896-.015 3.286c0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Star on GitHub</a></div>
     </nav>
     <main id="main">
       <header>
@@ -44,9 +44,9 @@
             <div class="seg b-other" style="--w: 1; --i: 3"></div>
           </div>
           <div class="turn-key" aria-hidden="true">
-            <span style="--w: 31"><b>Claude</b> 8.0s</span>
-            <span style="--w: 19"><b>tools</b> 4.7s</span>
-            <span style="--w: 49"><b>you</b> 12s</span>
+            <span style="--w: 31"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg>Claude</b> 8.0s</span>
+            <span style="--w: 19"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg>tools</b> 4.7s</span>
+            <span style="--w: 49"><b><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></g></svg>you</b> 12s</span>
             <span style="--w: 1"></span>
           </div>
           <figcaption>A real 26-second turn. The wait was mostly you: a permission dialog sat open for 12 seconds.</figcaption>
@@ -78,10 +78,10 @@
         <h2 id="buckets">Every second lands in one bucket.</h2>
         <p>The parts always add up to the turn. When two things overlap, the one higher in this list owns the time.</p>
         <dl class="buckets">
-          <div><dt><i class="sw b-you"></i>you</dt><dd>A permission dialog, from the moment it opens until the tool starts. A question Claude asked you. A plan waiting for your approval.</dd></div>
-          <div><dt><i class="sw b-tools"></i>tools</dt><dd>The tool's own run time, named by tool, and by command for Bash: <code>npm test</code>, <code>pytest</code>, <code>cargo build</code>. Tools that run at once count as parallel.</dd></div>
-          <div><dt><i class="sw b-claude"></i>Claude</dt><dd>Before output: from sending a request to its first word, thought or tool call, retries included. Writing: from there to the end.</dd></div>
-          <div><dt><i class="sw b-other"></i>other</dt><dd>Hooks, local work, the gaps between steps. Always shown, never hidden.</dd></div>
+          <div><dt><span class="sw b-you"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></g></svg></span>you</dt><dd>A permission dialog, from the moment it opens until the tool starts. A question Claude asked you. A plan waiting for your approval.</dd></div>
+          <div><dt><span class="sw b-tools"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19h8M4 17l6-6l-6-6"/></svg></span>tools</dt><dd>The tool's own run time, named by tool, and by command for Bash: <code>npm test</code>, <code>pytest</code>, <code>cargo build</code>. Tools that run at once count as parallel.</dd></div>
+          <div><dt><span class="sw b-claude"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2m16 0h2m-7-1v2m-6-2v2"/></g></svg></span>Claude</dt><dd>Before output: from sending a request to its first word, thought or tool call, retries included. Writing: from there to the end.</dd></div>
+          <div><dt><span class="sw b-other"><svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></g></svg></span>other</dt><dd>Hooks, local work, the gaps between steps. Always shown, never hidden.</dd></div>
         </dl>
       </section>
 
