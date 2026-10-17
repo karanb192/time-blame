@@ -1,0 +1,6 @@
+{
+  "description": "time-blame (Mod): session.start, session.end, command.run{command=blame}, turn.start, turn.step, turn.complete, tool.call, classic.PermissionRequest, classic.PostToolUse, classic.PostToolUseFailure. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1; builds without function hooks ignore the modules key.",
+  "modules": [
+    "./register.ts"
+  ]
+}
