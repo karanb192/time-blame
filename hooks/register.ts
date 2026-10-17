@@ -23,9 +23,9 @@ let totals: Totals = emptyTotals()
 let paneOpened = false
 // Reports by the turn's durationMs: the TurnDuration site carries the same
 // number, which is how its redraw finds the turn it closes.
-// A duration seen twice maps to null: a redraw then keeps Claude Code's own
-// line rather than guess. Once a closing line has drawn, its message id holds
-// the report so later redraws never depend on the duration again.
+// A report waits here by duration until its closing line first draws, then
+// moves to that line's message id, so it draws at one place only. A duration
+// already waiting maps to null and the newer turn gets a log line instead.
 const recent = new Map<number, TurnReport | null>()
 const byMessage = new Map<string, TurnReport>()
 const KEEP = 1000
@@ -100,6 +100,7 @@ export const register: Register = on => {
       const match = recent.get(e.props.durationMs)
       if (!match) return next(e)
       r = match
+      recent.delete(e.props.durationMs)
       remember(byMessage, e.requestId, r)
     }
     const { Text } = $.ui.resolve(e)
@@ -213,8 +214,13 @@ export const register: Register = on => {
         const surfaces = await $.session.surfaces()
         const terminalOnly = surfaces.length > 0 && surfaces.every(s => s === 'terminal')
         if (terminalOnly && !report.aborted) {
-          remember(recent, e.durationMs, recent.has(e.durationMs) ? null : report)
-          $.ui.invalidate('ui.render')
+          if (recent.has(e.durationMs)) {
+            recent.set(e.durationMs, null)
+            $.ui.log(turnLine(report))
+          } else {
+            remember(recent, e.durationMs, report)
+            $.ui.invalidate('ui.render')
+          }
         } else $.ui.log(turnLine(report))
       }
     }
