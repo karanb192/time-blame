@@ -66,6 +66,15 @@ describe('labels', () => {
     expect(bashLabel(undefined)).toBe('Bash')
   })
 
+  test('a chained command is named by its test or build step', async () => {
+    expect(bashLabel('cd repo && git fetch -q origin && git log --oneline -1 && npm test 2>&1 | tail -4')).toBe('npm test')
+    expect(bashLabel('cd repo && git stash -q && node --test tests/*.test.js 2>&1 | grep pass; git stash pop -q')).toBe('node --test')
+    expect(bashLabel('git add . && git commit -q -m "fix" && git push -q origin topic')).toBe('git add')
+    expect(bashLabel('./scripts/setup.sh && pytest -x')).toBe('pytest')
+    expect(bashLabel('cd repo && ./scripts/private-thing.sh --flag')).toBe('Bash')
+    expect(bashLabel('(npm run build) && echo ok')).toBe('npm run build')
+  })
+
   test('tool names', async () => {
     expect(toolLabel('Read', {})).toBe('Read')
     expect(toolLabel('mcp__acme__search', {})).toBe('MCP')

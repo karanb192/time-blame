@@ -144,30 +144,33 @@ const PROGRAMS = new Set([
   'ls', 'cat', 'grep', 'rg', 'find', 'sed', 'awk', 'head', 'tail', 'wc', 'sleep', 'echo', 'mkdir', 'rm', 'cp', 'mv', 'chmod', 'tar', 'jq', 'expr',
 ])
 
+// A chained command runs several programs; the one that ran tests or a build
+// is almost always where the time went, so it names the call over the others.
+const RUNNERS = /^(?:(?:npm|pnpm|yarn|bun) (?:test|run (?:test|build|e2e|typecheck)|build|e2e|typecheck)|npx|node --test|pytest|tsc|jest|vitest|playwright|cargo (?:test|build|bench)|go (?:test|build)|make|cmake|ninja|gradle|gradlew|mvn|dotnet (?:test|build)|swift (?:test|build)|xcodebuild)$/
+
 // Only a program on PROGRAMS, and only a subcommand on its own list, is ever
 // shown: a script name or path can be private, so anything else reads "Bash".
 export function bashLabel(command: unknown): string {
   if (typeof command !== 'string') return 'Bash'
-  const words = command.trim().split(/\s+/)
+  const labels = command
+    .split(/&&|\|\||;|\n/)
+    .map(part => labelOne((part.split('|')[0] as string).trim()))
+    .filter((label): label is string => label !== null)
+  return labels.find(label => RUNNERS.test(label)) || labels.find(label => label !== 'Bash') || 'Bash'
+}
+
+function labelOne(segment: string): string | null {
+  const words = segment.replace(/[()]/g, ' ').split(/\s+/).filter(Boolean)
   let i = 0
-  const skip = () => {
-    while (i < words.length && /^[A-Za-z_][A-Za-z0-9_]*=/.test(words[i] as string)) i++
-  }
-  skip()
-  while (words[i] === 'cd' || words[i] === 'time' || words[i] === 'env') {
-    if (words[i] === 'cd') {
-      while (i < words.length && words[i] !== '&&' && words[i] !== ';') i++
-      i++
-    } else i++
-    skip()
-  }
+  while (i < words.length && (/^[A-Za-z_][A-Za-z0-9_]*=/.test(words[i] as string) || words[i] === 'time' || words[i] === 'env')) i++
   const raw = words[i]
-  if (!raw) return 'Bash'
+  if (!raw || raw === 'cd') return null
   const program = raw.replace(/^\.\//, '').split('/').pop() as string
   if (!PROGRAMS.has(program)) return 'Bash'
   const next = words[i + 1]
   const after = words[i + 2]
   if ((program === 'python' || program === 'python3') && next === '-m' && after === 'pytest') return 'pytest'
+  if (program === 'node' && next === '--test') return 'node --test'
   if (PACKAGE_MANAGERS.has(program) && next) {
     if (next === 'run' && after && SCRIPT_NAMES.has(after)) return program + ' run ' + after
     if (PM_SUBCOMMANDS.has(next)) return program + ' ' + next

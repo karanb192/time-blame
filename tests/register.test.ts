@@ -1,14 +1,19 @@
 import { describe, expect, test, tier } from 'claude-code/testing'
-import type { On, TurnStepChunk, TurnStepInput, TurnStepResult } from 'claude-code'
+import type { TestBody } from 'claude-code/testing'
+import type { On, ToolCallInput, TurnStepChunk, TurnStepInput, TurnStepResult } from 'claude-code'
 
 tier('user')
 
-const pause = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+declare function setTimeout(callback: () => void, ms: number): unknown
+
+const npmTest: ToolCallInput = { tool: 'Bash', command: 'npm test', tool_use_id: 'u1' }
+
+const pause = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms))
 
 function world(on: On) {
   const lines: string[] = []
   on('ui.log', ($, e) => { lines.push(e.text); return { value: undefined } })
-  on('command.register', () => ({ value: undefined }))
+  on('command.register', ($, e) => ({ value: { command: e.name } }))
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('turn.start', ($, e) => ({ turnId: e.turnId }))
   on('turn.complete', () => ({ text: '' }))
@@ -23,7 +28,7 @@ function world(on: On) {
   return lines
 }
 
-async function step($: Parameters<Parameters<typeof test>[1]>[0], turnId: string, agentId?: string) {
+async function step($: Parameters<TestBody>[0], turnId: string, agentId?: string) {
   const it = $.turn.step({ turnId, index: 0, model: 'claude-opus-5-5', messageCount: 1, agentId })
   for await (const _ of it) { /* drain */ }
 }
@@ -34,7 +39,8 @@ describe('a turn', () => {
     await $.session.start({ surface: 'terminal', isInteractive: true, cwd: '/work' })
     await $.turn.start({ text: 'run the tests', turnId: 't1' })
     await step($, 't1')
-    await $.tool.call({ tool: 'Bash', command: 'npm test', tool_use_id: 'u1' } as never)
+    // @ts-expect-error tsc gives up on the engine's generic tool.call type (TS2589); the call itself is typed by npmTest.
+    await $.tool.call(npmTest)
     await step($, 't1')
     await $.turn.complete({ turnId: 't1', answer: 'done', durationMs: 5000, isAborted: false, reason: 'answer' })
     expect(lines.length).toBe(1)
