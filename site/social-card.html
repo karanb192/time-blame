@@ -10,19 +10,20 @@
     .wordmark { font-size: 36px; }
     .wordmark img { width: 48px; height: 48px; }
     h1 { font-size: 72px; max-width: none; margin: auto 0 32px; }
-    .turn-bar { height: 64px; }
-    .seg { animation: none; }
-    .turn-key { font-size: 22px; margin-bottom: auto; }
+    .card-bar { display: grid; grid-template-columns: 31fr 19fr 49fr 1fr; gap: 3px; height: 64px; }
+    .cseg { border-radius: 4px; }
+    .card-key { display: grid; grid-template-columns: 31fr 19fr 49fr 1fr; gap: 3px; margin: 12px 0 auto; font: 400 22px/1.3 var(--heading); }
+    .card-key b { font-weight: 500; margin-right: 6px; }
     .caption { display: flex; justify-content: space-between; color: var(--muted); font-size: 22px; }
   </style>
 </head>
 <body>
   <div class="wordmark"><img src="favicon.svg" width="48" height="48" alt="">time-blame</div>
   <h1>Is Claude slow,<br>or is it your npm test?</h1>
-  <div class="turn-bar" aria-hidden="true">
-    <div class="seg b-claude"></div><div class="seg b-tools"></div><div class="seg b-you"></div><div class="seg b-other"></div>
+  <div class="card-bar" aria-hidden="true">
+    <div class="cseg b-claude"></div><div class="cseg b-tools"></div><div class="cseg b-you"></div><div class="cseg b-other"></div>
   </div>
-  <div class="turn-key" aria-hidden="true"><span><b>Claude</b> 8.0s</span><span><b>tools</b> 4.7s</span><span><b>you</b> 12s</span><span></span></div>
+  <div class="card-key" aria-hidden="true"><span><b>Claude</b> 8.0s</span><span><b>tools</b> 4.7s</span><span><b>you</b> 12s</span><span></span></div>
   <div class="caption"><span>A Claude Code mod that splits every turn by who made you wait.</span><span>timeblame.aidojo.si</span></div>
 </body>
 </html>
