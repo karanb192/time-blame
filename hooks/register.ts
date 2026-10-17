@@ -23,7 +23,17 @@ let totals: Totals = emptyTotals()
 let paneOpened = false
 // Reports by the turn's durationMs: the TurnDuration site carries the same
 // number, which is how its redraw finds the turn it closes.
-const recent = new Map<number, TurnReport>()
+// A duration seen twice maps to null: a redraw then keeps Claude Code's own
+// line rather than guess. Once a closing line has drawn, its message id holds
+// the report so later redraws never depend on the duration again.
+const recent = new Map<number, TurnReport | null>()
+const byMessage = new Map<string, TurnReport>()
+const KEEP = 1000
+
+function remember<K, V>(map: Map<K, V>, key: K, value: V) {
+  map.set(key, value)
+  if (map.size > KEEP) map.delete(map.keys().next().value as K)
+}
 const execs = new Map<string, { start: number; end: number }>()
 const asks: Array<{ at: number; tool: string; claimed: boolean }> = []
 
@@ -54,8 +64,9 @@ export const register: Register = on => {
       for (const line of receipt(totals)) $.ui.log(line)
       return {}
     }
-    await $.ui.open({ id: PANE, title: 'time-blame', focus: true, closeOnEscape: true })
-    paneOpened = true
+    const opened = await $.ui.open({ id: PANE, title: 'time-blame', focus: true, closeOnEscape: true })
+    if (opened.isPlaced) paneOpened = true
+    else for (const line of receipt(totals)) $.ui.log(line)
     return {}
   })
 
@@ -84,8 +95,13 @@ export const register: Register = on => {
   })
 
   on('ui.render', { component: 'TurnDuration' }, async ($, e, next) => {
-    const r = recent.get(e.props.durationMs)
-    if (!r) return next(e)
+    let r = byMessage.get(e.requestId)
+    if (!r) {
+      const match = recent.get(e.props.durationMs)
+      if (!match) return next(e)
+      r = match
+      remember(byMessage, e.requestId, r)
+    }
     const { Text } = $.ui.resolve(e)
     return Text({
       children: [
@@ -101,6 +117,8 @@ export const register: Register = on => {
     if (e.reason === 'clear' || e.reason === 'resume') {
       totals = emptyTotals()
       turn = null
+      recent.clear()
+      byMessage.clear()
     }
     return next(e)
   })
@@ -195,8 +213,8 @@ export const register: Register = on => {
         const surfaces = await $.session.surfaces()
         const terminalOnly = surfaces.length > 0 && surfaces.every(s => s === 'terminal')
         if (terminalOnly && !report.aborted) {
-          recent.set(e.durationMs, report)
-          if (recent.size > 50) recent.delete(recent.keys().next().value as number)
+          remember(recent, e.durationMs, recent.has(e.durationMs) ? null : report)
+          $.ui.invalidate('ui.render')
         } else $.ui.log(turnLine(report))
       }
     }

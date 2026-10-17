@@ -106,20 +106,29 @@ export function bucketTimes(r: TurnReport): Record<Bucket, number> {
   return { claude: r.waiting + r.writing, tools: toolTotal(r), you: r.you, other: r.other }
 }
 
-// Splits `width` cells between the buckets in proportion to their time.
-// A bucket with any time gets at least one cell, so a short wait stays visible.
+// Splits `width` cells between the buckets in proportion to their time, by
+// largest remainder. A bucket with time but no cell then takes one from the
+// biggest bucket, so a short wait stays visible without skewing the rest.
 export function cells(times: Record<Bucket, number>, width: number): Bucket[] {
   const order: Bucket[] = ['claude', 'tools', 'you', 'other']
   const total = order.reduce((a, k) => a + times[k], 0)
   if (total <= 0 || width <= 0) return []
   const live = order.filter(k => times[k] > 0)
-  const counts = new Map<Bucket, number>(live.map(k => [k, 1]))
-  let left = width - live.length
-  if (left < 0) return live.slice(0, width)
-  const exact = live.map(k => ({ k, share: (times[k] / total) * left }))
-  for (const { k, share } of exact) counts.set(k, (counts.get(k) as number) + Math.floor(share))
-  left -= exact.reduce((a, { share }) => a + Math.floor(share), 0)
-  for (const { k } of [...exact].sort((x, y) => (y.share % 1) - (x.share % 1)).slice(0, left)) counts.set(k, (counts.get(k) as number) + 1)
+  const exact = live.map(k => ({ k, share: (times[k] / total) * width }))
+  const counts = new Map<Bucket, number>(exact.map(({ k, share }) => [k, Math.floor(share)]))
+  let left = width - exact.reduce((a, { share }) => a + Math.floor(share), 0)
+  for (const { k } of [...exact].sort((x, y) => (y.share % 1) - (x.share % 1))) {
+    if (left <= 0) break
+    counts.set(k, (counts.get(k) as number) + 1)
+    left--
+  }
+  for (const k of live) {
+    if ((counts.get(k) as number) > 0) continue
+    const donor = live.reduce((a, b) => ((counts.get(b) as number) > (counts.get(a) as number) ? b : a))
+    if ((counts.get(donor) as number) <= 1) break
+    counts.set(donor, (counts.get(donor) as number) - 1)
+    counts.set(k, 1)
+  }
   return live.flatMap(k => Array<Bucket>(counts.get(k) as number).fill(k))
 }
 

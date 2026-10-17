@@ -121,6 +121,12 @@ describe('colour', () => {
     expect(c[0]).toBe('claude')
   })
 
+  test('a lopsided split keeps its proportions', async () => {
+    const c = cells({ claude: 90, tools: 5, you: 5, other: 0 }, 10)
+    const count = (k: string) => c.filter(b => b === k).length
+    expect([count('claude'), count('tools'), count('you')]).toEqual([8, 1, 1])
+  })
+
   test('cells with nothing measured are empty', async () => {
     expect(cells({ claude: 0, tools: 0, you: 0, other: 0 }, 10)).toEqual([])
   })
